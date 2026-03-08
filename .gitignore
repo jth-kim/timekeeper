@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+
+# COO runtime state
+naive-coo/shared/logs/
+naive-coo/shared/state/
+naive-coo/shared/workspace/scripts/
+naive-coo/shared/workspace/results/
+naive-coo/shared/workspace/lib/
