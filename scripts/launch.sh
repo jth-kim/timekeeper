@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-EXPERIMENT="${1:?Usage: $0 <experiment-dir>  (e.g. qwen-think, qwen-nothink, qwen-hermes)}"
+EXPERIMENT="${1:?Usage: $0 <experiment-dir>  (e.g. qwen-think, qwen-think-noselfmod, qwen-hermes, qwen-hermes-noselfmod)}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$SCRIPT_DIR/.."
 TK_DIR="$REPO_DIR/$EXPERIMENT"
@@ -18,6 +18,19 @@ if [ ! -f "$TK_DIR/.env" ]; then
 fi
 
 mkdir -p "$TK_DIR/shared/logs" "$TK_DIR/shared/state" "$TK_DIR/shared/memory" "$TK_DIR/shared/workspace"
+
+# Prefer experiment-local config (for isolated self-mod runs), fallback to shared root config.
+CONFIG_SRC="$TK_DIR/config"
+if [ ! -d "$CONFIG_SRC" ]; then
+    CONFIG_SRC="$REPO_DIR/config"
+fi
+
+# Mount config writable only when SELF_MOD_ENABLED=true in the experiment .env.
+SELF_MOD_ENABLED="$(grep -E '^SELF_MOD_ENABLED=' "$TK_DIR/.env" | tail -1 | cut -d= -f2- | tr -d '[:space:]' || true)"
+CONFIG_MOUNT_MODE="ro"
+if [ "${SELF_MOD_ENABLED,,}" = "true" ]; then
+    CONFIG_MOUNT_MODE="rw"
+fi
 
 # Extra volume mounts per experiment
 EXTRA_VOLS=""
@@ -37,7 +50,7 @@ podman run -d \
     -v "$TK_DIR/shared/logs:/data/logs:Z" \
     -v "$TK_DIR/shared/state:/data/state:Z" \
     -v "$TK_DIR/shared/memory:/data/memory:Z" \
-    -v "$REPO_DIR/config:/data/config:ro,Z" \
+    -v "$CONFIG_SRC:/data/config:${CONFIG_MOUNT_MODE},Z" \
     -v "$TK_DIR/shared/workspace:/data/workspace:Z" \
     $EXTRA_VOLS \
     "$IMAGE_NAME"

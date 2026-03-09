@@ -1,0 +1,26 @@
+# COO Alert Thresholds
+
+[goal_neglect]
+star_warn_days = 3
+star_alert_days = 7
+bboy_warn_days = 5
+bboy_alert_days = 10
+seifuku_warn_days = 7
+seifuku_alert_days = 14
+boj_warn_days = 30
+boj_alert_days = 60
+
+[allocation]
+star_target = 0.55
+bboy_target = 0.20
+seifuku_target = 0.15
+boj_target = 0.10
+drift_threshold = 0.25
+
+[anomaly]
+scattered_zscore = 1.5
+tunnel_zscore = -1.5
+
+[cadence]
+min_hours_between_nudges = 4
+max_nudges_per_day = 3

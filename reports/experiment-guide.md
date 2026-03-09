@@ -70,6 +70,23 @@ NousResearch hermes-agent framework, cloned and driven programmatically.
 
 ---
 
+### 5. epoch-2 qwen matrix (planned)
+
+**Model**: qwen3:30b-a3b | **Status**: ready to run
+
+Next run is a 4-way matrix to isolate architecture and self-mod effects:
+
+1. `qwen-think` (self-mod ON)
+2. `qwen-think-noselfmod` (self-mod OFF)
+3. `qwen-hermes` (self-mod ON)
+4. `qwen-hermes-noselfmod` (self-mod OFF)
+
+All four use the same new COO identity baseline and experiment-local config snapshots.
+
+**Run plan**: `epoch-2-plan.md`
+
+---
+
 ## Cross-Cutting Findings
 
 ### Thinking capacity is necessary but not sufficient
@@ -95,17 +112,20 @@ Hermes's stability + custom architecture's mode rotation + think-mode reasoning.
 
 ```
 timekeeper/
-├── archive/              # Frozen experiments
-│   ├── naive-coo/        # llama3.3:70b baseline
-│   └── qwen-nothink/     # qwen3 without thinking (control)
-├── qwen-think/           # qwen3 with thinking (kept as history)
-├── qwen-hermes/          # hermes framework (pending rerun)
+├── archive/                    # Frozen epochs
+│   ├── 0_naive_run/            # naive-coo baseline
+│   ├── 1_qwen_run/             # first qwen epoch (think/nothink/hermes)
+│   └── 2_qwen_run/             # reserved for next 4-way epoch artifacts
+├── qwen-think/                 # active root experiment (self-mod ON)
+├── qwen-think-noselfmod/       # active root experiment (self-mod OFF)
+├── qwen-hermes/                # active root experiment (self-mod ON)
+├── qwen-hermes-noselfmod/      # active root experiment (self-mod OFF)
 ├── reports/              # All performance reports
 │   ├── experiment-guide.md    # This file
 │   ├── naive-coo-report.md   # naive-coo post-mortem
 │   ├── abc-report.md         # ABC test comparative report
 │   └── qwen-hermes-report.md # Hermes-specific post-mortem
-├── config/               # Shared COO identity (mounted read-only into all experiments)
+├── config/               # Baseline prompt/config files (copied per experiment)
 │   ├── coo_identity.md
 │   ├── system_prompt.md
 │   ├── system_prompt_inner.md

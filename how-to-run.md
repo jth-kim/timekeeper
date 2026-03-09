@@ -12,7 +12,11 @@
 scripts/run-ab.sh
 ```
 
-Builds and launches all experiments listed in the script. Edit `run-ab.sh` to add/remove experiments.
+Builds and launches the current 4-way matrix:
+- `qwen-think`
+- `qwen-think-noselfmod`
+- `qwen-hermes`
+- `qwen-hermes-noselfmod`
 
 ## Run a Single Experiment
 
@@ -20,7 +24,7 @@ Builds and launches all experiments listed in the script. Edit `run-ab.sh` to ad
 # 1. One-time: ensure the podman network exists
 scripts/setup-network.sh
 
-# 2. Build the container image
+# 2. Build one container image
 scripts/build.sh qwen-hermes
 
 # 3. Launch it
@@ -64,6 +68,10 @@ podman stop $(podman ps --filter "name=timekeeper" -q)
 
 State is persisted in `<experiment>/shared/` — restarting picks up where it left off.
 
+Each experiment also has its own `<experiment>/config/` mounted at `/data/config`.
+When `SELF_MOD_ENABLED=true` in that experiment's `.env`, config is mounted writable.
+When `SELF_MOD_ENABLED=false`, config is mounted read-only.
+
 ## Clean Restart (wipe state)
 
 ```bash
@@ -94,11 +102,11 @@ podman machine start
 ## Repo Layout
 
 ```
-config/                   # Shared COO identity — mounted read-only into all experiments
-├── coo_identity.md       #   who the COO is
-├── system_prompt.md      #   outer system prompt
-├── system_prompt_inner.md #  cognitive structure guidance
-└── thresholds.toml       #   alert thresholds
+config/                   # Baseline shared prompt files (copied into each experiment config/)
+├── coo_identity.md
+├── system_prompt.md
+├── system_prompt_inner.md
+└── thresholds.toml
 
 scripts/                  # Shared operational scripts
 ├── build.sh              #   build one experiment: scripts/build.sh <name>
@@ -108,6 +116,7 @@ scripts/                  # Shared operational scripts
 
 <experiment>/             # Each experiment directory
 ├── .env                  #   environment variables (model, cooldown, etc.)
+├── config/               #   experiment-local prompt/config snapshot
 ├── coo/                  #   source code + Containerfile
 │   ├── Containerfile
 │   └── src/
@@ -124,5 +133,6 @@ scripts/                  # Shared operational scripts
 1. Create a directory: `mkdir -p new-experiment/coo/src`
 2. Add a `Containerfile` and source code in `coo/`
 3. Copy and adjust `.env` from an existing experiment
-4. If it needs hermes state: `mkdir -p new-experiment/shared/hermes`
-5. Build and launch: `scripts/build.sh new-experiment && scripts/launch.sh new-experiment`
+4. Add `SELF_MOD_ENABLED=true|false` in `.env` (controls config mount mode)
+5. If it needs hermes state: `mkdir -p new-experiment/shared/hermes`
+6. Build and launch: `scripts/build.sh new-experiment && scripts/launch.sh new-experiment`

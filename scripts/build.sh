@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-EXPERIMENT="${1:?Usage: $0 <experiment-dir>  (e.g. qwen-think)}"
+EXPERIMENT="${1:?Usage: $0 <experiment-dir>  (e.g. qwen-think, qwen-think-noselfmod, qwen-hermes, qwen-hermes-noselfmod)}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$SCRIPT_DIR/.."
 COO_DIR="$REPO_DIR/$EXPERIMENT/coo"

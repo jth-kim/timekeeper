@@ -81,3 +81,14 @@ Given total freedom to decide what to do each cycle, qwen3:30b-a3b chose to do n
 ## Verdict
 
 **Experiment invalid.** The comparison was "hermes with no data access and no identity" vs "custom architecture with full data access and full identity." No conclusions about hermes's architectural merits can be drawn. A rerun with correct tool registration and SOUL.md placement is needed.
+
+---
+
+## Rerun readiness (epoch 2)
+
+The next root-level `qwen-hermes` experiments are configured to address the above:
+
+1. Write `SOUL.md` to `/app/SOUL.md` and `~/.hermes/SOUL.md` (plus `/data/hermes/SOUL.md` backup)
+2. Register timekeeper tools and inject a `timekeeper` legacy toolset mapping
+3. Start `AIAgent` with explicit `enabled_toolsets` including `timekeeper`
+4. Gate self-modification via `SELF_MOD_ENABLED` and experiment-local config mounts
