@@ -1,0 +1,9 @@
+client_name
+⭐️ STAR      3484.222222
+👘 SEIFUKU    5494.500000
+🔥 BBOY       2756.428571
+Name: duration_seconds, dtype: float64client_name
+⭐️ STAR      2524.995038
+👘 SEIFUKU    3262.065292
+🔥 BBOY        783.444713
+Name: duration_seconds, dtype: float64

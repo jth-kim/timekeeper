@@ -2,9 +2,30 @@
 __pycache__/
 *.pyc
 
-# COO runtime state
+# COO runtime state (naive-coo — frozen experiment)
 naive-coo/shared/logs/
 naive-coo/shared/state/
 naive-coo/shared/workspace/scripts/
 naive-coo/shared/workspace/results/
 naive-coo/shared/workspace/lib/
+
+# Qwen ABC test runtime state
+qwen-think/shared/logs/
+qwen-think/shared/state/
+qwen-think/shared/memory/
+qwen-think/shared/workspace/scripts/
+qwen-think/shared/workspace/results/
+qwen-think/shared/workspace/lib/
+qwen-nothink/shared/logs/
+qwen-nothink/shared/state/
+qwen-nothink/shared/memory/
+qwen-nothink/shared/workspace/scripts/
+qwen-nothink/shared/workspace/results/
+qwen-nothink/shared/workspace/lib/
+qwen-hermes/shared/logs/
+qwen-hermes/shared/state/
+qwen-hermes/shared/memory/
+qwen-hermes/shared/hermes/
+qwen-hermes/shared/workspace/scripts/
+qwen-hermes/shared/workspace/results/
+qwen-hermes/shared/workspace/lib/

@@ -1,0 +1,32 @@
+FROM python:3.12-slim
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Clone hermes-agent
+RUN git clone --depth 1 https://github.com/NousResearch/hermes-agent.git /app/hermes-agent
+
+# Install hermes-agent core deps (skip heavy optional deps we don't need)
+RUN uv venv /app/.venv && \
+    . /app/.venv/bin/activate && \
+    cd /app/hermes-agent && \
+    uv pip install openai python-dotenv fire httpx rich tenacity pyyaml requests jinja2 "pydantic>=2.0" prompt_toolkit platformdirs typer croniter PyJWT && \
+    uv pip install structlog tomli
+
+# Neuter tools/__init__.py — hermes's eager imports pull in optional deps
+# we don't have. Tool discovery happens via model_tools._discover_tools()
+# which handles missing deps gracefully.
+RUN echo '"""Tools package — imports handled by model_tools._discover_tools()"""' > /app/hermes-agent/tools/__init__.py
+
+# Copy our driver and tools
+COPY src/ ./src/
+
+VOLUME ["/data/logs", "/data/state", "/data/config", "/data/hermes", "/data/workspace"]
+
+ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONPATH="/app/hermes-agent:/app/src"
+
+ENTRYPOINT ["python", "-u", "src/driver.py"]
